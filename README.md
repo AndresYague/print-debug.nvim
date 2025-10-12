@@ -53,4 +53,4 @@ The `mark` and the `keymap` are the two configurable options right now. This mus
 
 ## Known issues
 
-If using an *autopairs* style plugin it may interact negatively with this pluging, so it may be better to disable it when actively using the plugin. Currently, `nvim-autopairs` is compatible with this plugin, so long as it is *not* lazy loaded.
+*Autopairs* style plugin may interact negatively with this pluging, so it may be better to disable it when actively using the plugin. Currently, `nvim-autopairs` is compatible with this plugin, so long as it is *not* lazy loaded.

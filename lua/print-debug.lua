@@ -2,11 +2,9 @@ local M = {}
 
 ---@param input string String to "debug print"
 ---@param mark string String that marks what has to be outputed as variable
+---@param unmark string String without the mark present
 ---@return string new_input
-local new_input_py = function(input, mark)
-  -- First, remove the pipe character from the "real" input
-  local unmark = string.gsub(input, mark, "")
-
+local new_input_py = function(input, mark, unmark)
   -- Find where the mark is and print the word after it
   local p_mark = string.gsub(input, mark .. "(%w+)", "{%1}")
 
@@ -15,11 +13,9 @@ end
 
 ---@param input string String to "debug print"
 ---@param mark string String that marks what has to be outputed as variable
+---@param unmark string String without the mark present
 ---@return string new_input
-local new_input_cpp = function(input, mark)
-  -- First, remove the pipe character from the "real" input
-  local unmark = string.gsub(input, mark, "")
-
+local new_input_cpp = function(input, mark, unmark)
   -- Find where the mark is and print the word after it
   local p_mark = string.gsub(input, mark .. "(%w+)", '" << %1 << "')
 
@@ -33,7 +29,7 @@ end
 ---Debug print for python code, uses a mark to indicate where to
 ---print a variable (such as an index)
 ---@param mark string String that marks what has to be outputed as variable
----@param new_input_func function new_input_func(input: string, mark: string): string
+---@param new_input_func function new_input_func(input: string, mark: string, unmark: string): string
 local print_debug = function(mark, new_input_func)
   vim.ui.input({ prompt = "What to print" }, function(input)
     -- Deactivate autopairs if loaded
@@ -45,8 +41,11 @@ local print_debug = function(mark, new_input_func)
       end
     end
 
+    -- First, remove the mark character from the "real" input
+    local unmark = string.gsub(input, mark, "")
+
     -- Manipulate input for debug print
-    local new_input = new_input_func(input, mark)
+    local new_input = new_input_func(input, mark, unmark)
 
     -- Replace the special characters
     new_input = vim.api.nvim_replace_termcodes(new_input, true, true, true)
@@ -65,7 +64,7 @@ vim.api.nvim_create_augroup("print-debug-augroup", { clear = true })
 
 ---@param pattern table Table of string patterns indicating which extension it affects
 ---@param callable function callable(mark: string, new_input_func: function)
----@param new_input_func function new_input_func(input: string, mark: string): string
+---@param new_input_func function new_input_func(input: string, mark: string, unmark: string): string
 ---@param mark string String that marks what has to be outputed as variable
 ---@param keymap string What keymap to use for the debug print
 local map = function(pattern, callable, new_input_func, mark, keymap)
