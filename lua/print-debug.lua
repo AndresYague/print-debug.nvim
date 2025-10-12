@@ -60,14 +60,18 @@ local print_debug = function(mark, new_input_func)
   end)
 end
 
----@param pattern string Pattern indicating which FileType it affects
+-- Group for the autocmd
+vim.api.nvim_create_augroup("print-debug-augroup", { clear = true })
+
+---@param pattern table Table of string patterns indicating which extension it affects
 ---@param callable function callable(mark: string, new_input_func: function)
 ---@param new_input_func function new_input_func(input: string, mark: string): string
 ---@param mark string String that marks what has to be outputed as variable
 ---@param keymap string What keymap to use for the debug print
 local map = function(pattern, callable, new_input_func, mark, keymap)
-  vim.api.nvim_create_autocmd({ "FileType" }, {
-    pattern = { pattern },
+  vim.api.nvim_create_autocmd({ "BufEnter" }, {
+    group = "print-debug-augroup",
+    pattern = pattern,
     callback = function()
       vim.keymap.set("n", keymap, function()
         callable(mark, new_input_func)
@@ -80,10 +84,10 @@ end
 M.setup = function(opts)
   opts = opts or {}
   opts.mark = opts.mark or '"'
-  opts.keymap = opts.keymap or '<leader>dp'
+  opts.keymap = opts.keymap or "<leader>dp"
 
-  map("python", print_debug, new_input_py, opts.mark, opts.keymap)
-  map("cpp", print_debug, new_input_cpp, opts.mark, opts.keymap)
+  map({ "*.py" }, print_debug, new_input_py, opts.mark, opts.keymap)
+  map({ "*.cpp", "*.hh" }, print_debug, new_input_cpp, opts.mark, opts.keymap)
 end
 
 return M
