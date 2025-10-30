@@ -1,12 +1,24 @@
 local M = {}
 
+--- Find where the mark is and print the word after it
+---@param input string String to "debug print"
+---@param mark string String that marks what has to be outputed as variable
+---@param left string String to suround the marked word on the left
+---@param right string String to suround the marked word on the right
+---@return string
+local surround_mark = function(input, mark, left, right)
+  -- This takes the first value out of gsub
+  local subbed = string.gsub(input, mark .. "([%w%.:]+)", left .. "%1" .. right)
+  return subbed
+end
+
 ---@param input string String to "debug print"
 ---@param mark string String that marks what has to be outputed as variable
 ---@param unmark string String without the mark present
 ---@return string new_input
 local new_input_py = function(input, mark, unmark)
   -- Find where the mark is and print the word after it
-  local p_mark = string.gsub(input, mark .. "(%w+)", "{%1}")
+  local p_mark = surround_mark(input, mark, "{", "}")
 
   return 'oprint(f"' .. p_mark .. " = {" .. unmark .. '}")<ESC>'
 end
@@ -17,7 +29,7 @@ end
 ---@return string new_input
 local new_input_cpp = function(input, mark, unmark)
   -- Find where the mark is and print the word after it
-  local p_mark = string.gsub(input, mark .. "(%w+)", '" << %1 << "')
+  local p_mark = surround_mark(input, mark, '" << ', ' << "')
 
   return 'ostd::cout << "'
     .. p_mark
