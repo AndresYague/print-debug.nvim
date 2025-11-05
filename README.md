@@ -33,7 +33,8 @@ Install it like any other plugin. For example, if using `LazyVim` as your packag
     'AndresYague/print-debug.nvim',
     opts = {
       mark = '"',
-      keymap = '<leader>dp',
+      keymap_above = '<leader>dP',
+      keymap_below = '<leader>dp',
     },
   }
 ```
@@ -43,12 +44,13 @@ Install it like any other plugin. For example, if using `LazyVim` as your packag
 The `mark` and the `keymap` are the two configurable options right now. These must be in a table passed to `setup`. Such as:
 
 ```lua
-    require('print-debug').setup { mark = '"', keymap = '<leader>dp' }
+    require('print-debug').setup { mark = '"', keymap_above = '<leader>dP', keymap_below = '<leader>dp' }
 ```
 
 ## Currently supported languages
 
     cpp
+    lua
     python
 
 ## Known issues
