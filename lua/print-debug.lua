@@ -131,7 +131,7 @@ M.setup = function(opts)
 
   map({ "*.py" }, new_input_py, print_debug, opts)
   map({ "*.lua" }, new_input_lua, print_debug, opts)
-  map({ "*.cpp", "*.hh" }, new_input_cpp, print_debug, opts)
+  map({ "*.cpp", "*.cc", "*.hh" }, new_input_cpp, print_debug, opts)
 end
 
 return M
