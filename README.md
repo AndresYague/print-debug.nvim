@@ -49,9 +49,9 @@ The `mark` and the `keymap` are the two configurable options right now. These mu
 
 ## Currently supported languages
 
-    cpp
-    lua
-    python
+- cpp
+- lua
+- python
 
 ## Known issues
 
