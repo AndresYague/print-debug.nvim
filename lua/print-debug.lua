@@ -56,10 +56,10 @@ end
 ---@param new_input_func function new_input_func(input: string, mark: string, unmark: string): string
 local print_debug = function(mark, new_input_func, above)
   above = above or false
-  vim.ui.input({ prompt = "What to print" }, function(input)
+  vim.ui.input({ prompt = "What to print: " }, function(input)
     -- If empty input, do nothing
     if not input then
-      return nil
+      return
     end
 
     -- Deactivate autopairs if loaded
