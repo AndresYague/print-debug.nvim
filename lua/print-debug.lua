@@ -57,13 +57,19 @@ end
 local print_debug = function(mark, new_input_func, above)
   above = above or false
 
-  ---Main function to print the given word with all the specifications
-  ---of the plugin
-  ---@param word string?
-  ---@return nil
-  local print_word = function(word)
+  -- Try to get a node with treesitter
+  local success, node = pcall(vim.treesitter.get_node)
+  local word = ""
+  if success and node then
+    word = vim.treesitter.get_node_text(node, 0)
+  else
+    -- Get word under cursor
+    word = vim.fn.expand("<cword>")
+  end
+
+  vim.ui.input({ prompt = "Print debug: ", default = word }, function(input)
     -- If empty word, do nothing
-    if not word then
+    if not input then
       return
     end
 
@@ -77,10 +83,10 @@ local print_debug = function(mark, new_input_func, above)
     end
 
     -- First, remove the mark character from the "real" input
-    local unmark = string.gsub(word, mark, "")
+    local unmark = string.gsub(input, mark, "")
 
     -- Manipulate word for debug print
-    local new_input = new_input_func(word, mark, unmark)
+    local new_input = new_input_func(input, mark, unmark)
     if above then
       new_input = "O" .. new_input
     else
@@ -96,22 +102,6 @@ local print_debug = function(mark, new_input_func, above)
     if enabled_autopairs then
       require("nvim-autopairs").enable()
     end
-  end
-
-  -- Try to get a node with treesitter
-  local node = vim.treesitter.get_node()
-  local word = ""
-  if node then
-    word = vim.treesitter.get_node_text(node, 0)
-  else
-    -- Get word under cursor
-    word = vim.fn.expand("<cword>")
-  end
-
-  -- Try it first, if it doesn't exist or the user does not want it,
-  -- use normal prompt
-  vim.ui.input({ prompt = "Print debug: ", default = word }, function(input)
-    print_word(input)
   end)
 end
 
