@@ -98,23 +98,21 @@ local print_debug = function(mark, new_input_func, above)
     end
   end
 
-  -- Get word under cursor
-  local word = vim.fn.expand("<cword>")
-  if word:len() > 0 then
-    vim.ui.input({ prompt = "Print " .. word .. "? [y]/n: " }, function(answer)
-      if answer:len() == 0 or answer == "y" then
-        print_word(word)
-      else
-        vim.ui.input({ prompt = "What to print: " }, function(input)
-          print_word(input)
-        end)
-      end
-    end)
+  -- Try to get a node with treesitter
+  local node = vim.treesitter.get_node()
+  local word = ""
+  if node then
+    word = vim.treesitter.get_node_text(node, 0)
   else
-    vim.ui.input({ prompt = "What to print: " }, function(input)
-      print_word(input)
-    end)
+    -- Get word under cursor
+    word = vim.fn.expand("<cword>")
   end
+
+  -- Try it first, if it doesn't exist or the user does not want it,
+  -- use normal prompt
+  vim.ui.input({ prompt = "Print debug: ", default = word }, function(input)
+    print_word(input)
+  end)
 end
 
 -- Group for the autocmd
@@ -158,3 +156,4 @@ M.setup = function(opts)
 end
 
 return M
+
