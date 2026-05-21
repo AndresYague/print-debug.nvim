@@ -56,9 +56,14 @@ end
 ---@param new_input_func function new_input_func(input: string, mark: string, unmark: string): string
 local print_debug = function(mark, new_input_func, above)
   above = above or false
-  vim.ui.input({ prompt = "What to print: " }, function(input)
-    -- If empty input, do nothing
-    if not input then
+
+  ---Main function to print the given word with all the specifications
+  ---of the plugin
+  ---@param word string?
+  ---@return nil
+  local print_word = function(word)
+    -- If empty word, do nothing
+    if not word then
       return
     end
 
@@ -72,10 +77,10 @@ local print_debug = function(mark, new_input_func, above)
     end
 
     -- First, remove the mark character from the "real" input
-    local unmark = string.gsub(input, mark, "")
+    local unmark = string.gsub(word, mark, "")
 
-    -- Manipulate input for debug print
-    local new_input = new_input_func(input, mark, unmark)
+    -- Manipulate word for debug print
+    local new_input = new_input_func(word, mark, unmark)
     if above then
       new_input = "O" .. new_input
     else
@@ -91,7 +96,25 @@ local print_debug = function(mark, new_input_func, above)
     if enabled_autopairs then
       require("nvim-autopairs").enable()
     end
-  end)
+  end
+
+  -- Get word under cursor
+  local word = vim.fn.expand("<cword>")
+  if word:len() > 0 then
+    vim.ui.input({ prompt = "Print " .. word .. "? [y]/n: " }, function(answer)
+      if answer:len() == 0 or answer == "y" then
+        print_word(word)
+      else
+        vim.ui.input({ prompt = "What to print: " }, function(input)
+          print_word(input)
+        end)
+      end
+    end)
+  else
+    vim.ui.input({ prompt = "What to print: " }, function(input)
+      print_word(input)
+    end)
+  end
 end
 
 -- Group for the autocmd
